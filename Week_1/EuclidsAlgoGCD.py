@@ -1,42 +1,35 @@
-from ast import Call
 import time
 
 def timer(func):
     def wrapper(*args, **kwargs):
-        mrts = time.time()
+        mrts = time.perf_counter()
         res = func(*args, **kwargs)
-        print("Time Taken to run the function {}: ".format(func.__name__), (time.time() - mrts) *1000000, "µs")
+        print("Time Taken to run the function {}: ".format(func.__name__), (time.perf_counter() - mrts) *1000000, "µs")
         return res
         
     return wrapper
 
-# @timer
-def ToOptimiseGCD(a, b):
-    (a, b) = (max(a,b), min(a,b))
-    if a%b == 0: 
-        return b
-    else: 
-        return ToOptimiseGCD(b, a-b)
+@timer
+def ToOptimiseGCD(a,b):
+    def func(a, b):
+        (a, b) = (max(a,b), min(a,b))
+        if a%b == 0: 
+            return b
+        else: 
+            return func(b, a-b)
+    return func(a,b)
 
-# @timer
+@timer
 def EuclidianAlgo(a,b):
-    (a, b) = (max(a,b), min(a,b))
-    if a%b == 0: 
-        return b
-    else: 
-        return ToOptimiseGCD(b, a%b)
-    
-@timer
-def CallEuclidianAlgo(a,b): #Separate function due to the presence of recursion 
-    return EuclidianAlgo(a,b)
+    def func(a, b):
+        if a%b == 0: 
+            return b
+        else: 
+            return func(b, a%b)
+    return func(a,b)
 
-@timer
-def CallToOptimiseGCD(a,b):
-    return ToOptimiseGCD(a,b)
-
-print("GCD: ", CallToOptimiseGCD(20000000, 100000000))
-
-print("Euclidian GCD: ", CallEuclidianAlgo(20000000, 100000000))
+print("GCD: ", ToOptimiseGCD(12, 24))
+print("Euclidian GCD: ", EuclidianAlgo(12, 24))
 
 
 
